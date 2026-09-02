@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  RESOURCE_GROUP: rg-chatapp-nonprod
+  RESOURCE_GROUP: rg-chatapp-nonprod-centralindia
   LOCATION: centralindia
 
 jobs:
