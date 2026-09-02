@@ -12,7 +12,7 @@ permissions:
 
 env:
   RESOURCE_GROUP: rg-chatapp-nonprod
-  LOCATION: eastus
+  LOCATION: centralindia
 
 jobs:
   deploy:
