@@ -5,7 +5,7 @@ param environment string
 param location string = resourceGroup().location
 
 @description('Globally unique ACR name (alphanumeric only, no hyphens)')
-param acrName string = 'acrchatapp${environment}'
+param acrName string = 'acr${take(toLower(uniqueString(subscription().subscriptionId, resourceGroup().id, environment)), 8)}${environment}'
 
 resource acr 'Microsoft.ContainerRegistry/registries@2023-11-01-preview' = {
   name: acrName
