@@ -10,8 +10,11 @@ param githubRepo string = 'chat-app'
 @description('GitHub branch name to trust (exact match required)')
 param githubBranch string = 'main'
 
+var uniqueSuffix = toLower(uniqueString(subscription().subscriptionId, resourceGroup().id, environment))
+var uamiName = 'uami-${take(uniqueSuffix, 8)}-${environment}'
+
 resource uami 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  name: 'uami-chatapp-${environment}'
+  name: uamiName
 }
 
 resource federatedCredential 'Microsoft.ManagedIdentity/userAssignedIdentities/federatedIdentityCredentials@2023-01-31' = {

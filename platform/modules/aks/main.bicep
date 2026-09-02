@@ -10,10 +10,13 @@ param vmSize string = 'Standard_B2s'
 @description('Number of nodes in the system pool')
 param nodeCount int = 1
 
-var aksSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', 'vnet-chatapp-${environment}', 'snet-aks')
+var uniqueSuffix = toLower(uniqueString(subscription().subscriptionId, resourceGroup().id, environment))
+var vnetName = 'vnet-${take(uniqueSuffix, 8)}-${environment}'
+var aksName = 'aks-${take(uniqueSuffix, 8)}-${environment}'
+var aksSubnetId = resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'snet-aks')
 
 resource aks 'Microsoft.ContainerService/managedClusters@2024-02-01' = {
-  name: 'aks-chatapp-${environment}'
+  name: aksName
   location: location
   identity: {
     type: 'SystemAssigned'

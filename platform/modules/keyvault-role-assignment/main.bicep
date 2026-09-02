@@ -8,9 +8,10 @@ param principalId string
 param principalType string = 'ServicePrincipal'
 
 var keyVaultSecretsUserRoleId = '4633458b-17de-408a-b874-0445c86b69e6'
+var keyVaultName = 'kv-${take(toLower(uniqueString(subscription().subscriptionId, resourceGroup().id, environment)), 8)}-${environment}'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: 'kv-chatapp-${environment}'
+  name: keyVaultName
 }
 
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {

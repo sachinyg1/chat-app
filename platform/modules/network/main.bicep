@@ -13,8 +13,12 @@ param aksSubnetPrefix string = '10.0.1.0/24'
 @description('Address prefix for the Gateway subnet (must be named GatewaySubnet)')
 param gatewaySubnetPrefix string = '10.0.255.0/27'
 
+var uniqueSuffix = toLower(uniqueString(subscription().subscriptionId, resourceGroup().id, environment))
+var nsgName = 'nsg-${take(uniqueSuffix, 8)}-aks-${environment}'
+var vnetName = 'vnet-${take(uniqueSuffix, 8)}-${environment}'
+
 resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
-  name: 'nsg-aks-chatapp-${environment}'
+  name: nsgName
   location: location
   properties: {
     securityRules: [
@@ -36,7 +40,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
-  name: 'vnet-chatapp-${environment}'
+  name: vnetName
   location: location
   properties: {
     addressSpace: {

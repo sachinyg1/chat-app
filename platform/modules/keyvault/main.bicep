@@ -5,7 +5,7 @@ param environment string
 param location string = resourceGroup().location
 
 @description('Globally unique Key Vault name')
-param keyVaultName string = 'kv-chatapp-${environment}'
+param keyVaultName string = 'kv-${take(toLower(uniqueString(subscription().subscriptionId, resourceGroup().id, environment)), 8)}-${environment}'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyVaultName
