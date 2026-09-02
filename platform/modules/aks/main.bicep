@@ -5,7 +5,7 @@ param environment string
 param location string = resourceGroup().location
 
 @description('VM size for the AKS node pool - keep small/cheap for nonprod')
-param vmSize string = 'Standard_B2s'
+param vmSize string = 'standard_b2ps_v2'
 
 @description('Number of nodes in the system pool')
 param nodeCount int = 1
