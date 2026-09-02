@@ -1,0 +1,95 @@
+name: Deploy Chat-App Infrastructure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'platform/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  RESOURCE_GROUP: rg-chatapp-nonprod
+  LOCATION: eastus
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group (if not exists)
+        run: |
+          az group create --name $RESOURCE_GROUP --location $LOCATION
+
+      - name: Deploy network module
+        run: |
+          az deployment group create \
+            --resource-group $RESOURCE_GROUP \
+            --template-file platform/modules/network/main.bicep \
+            --parameters platform/modules/network/parameters/nonprod.bicepparam
+
+      - name: Deploy uami (base) module
+        run: |
+          az deployment group create \
+            --resource-group $RESOURCE_GROUP \
+            --template-file platform/modules/uami/main.bicep \
+            --parameters platform/modules/uami/parameters/nonprod-base.bicepparam
+
+      - name: Deploy uami (federated) module
+        run: |
+          az deployment group create \
+            --resource-group $RESOURCE_GROUP \
+            --template-file platform/modules/uami-federated/main.bicep \
+            --parameters platform/modules/uami-federated/parameters/nonprod-federated.bicepparam
+
+      - name: Deploy acr module
+        run: |
+          az deployment group create \
+            --resource-group $RESOURCE_GROUP \
+            --template-file platform/modules/acr/main.bicep \
+            --parameters platform/modules/acr/parameters/nonprod.bicepparam
+
+      - name: Deploy keyvault module
+        run: |
+          az deployment group create \
+            --resource-group $RESOURCE_GROUP \
+            --template-file platform/modules/keyvault/main.bicep \
+            --parameters platform/modules/keyvault/parameters/nonprod.bicepparam
+
+      - name: Deploy aks module
+        run: |
+          az deployment group create \
+            --resource-group $RESOURCE_GROUP \
+            --template-file platform/modules/aks/main.bicep \
+            --parameters platform/modules/aks/parameters/nonprod.bicepparam
+
+      - name: Get AKS kubelet identity object ID
+        id: kubelet
+        run: |
+          KUBELET_ID=$(az deployment group show \
+            --resource-group $RESOURCE_GROUP \
+            --name main \
+            --query 'properties.outputs.kubeletIdentityObjectId.value' \
+            --output tsv)
+          echo "kubelet_id=$KUBELET_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy keyvault-role-assignment module
+        run: |
+          az deployment group create \
+            --resource-group $RESOURCE_GROUP \
+            --template-file platform/modules/keyvault-role-assignment/main.bicep \
+            --parameters platform/modules/keyvault-role-assignment/parameters/nonprod.bicepparam \
+            --parameters principalId=${{ steps.kubelet.outputs.kubelet_id }}
