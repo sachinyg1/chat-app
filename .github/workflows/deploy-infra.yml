@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 env:
-  RESOURCE_GROUP: rg-chatapp-nonprod-westus2
-  LOCATION: westus2
+  RESOURCE_GROUP: rg-chatapp-nonprod
+  LOCATION: eastus
 
 jobs:
   deploy:
