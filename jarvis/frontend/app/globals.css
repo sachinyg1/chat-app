@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background-color: #0b0e14;
+  color: #e8eaed;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #232a3b transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #232a3b;
+  border-radius: 8px;
+}
+
+.prose-jarvis p {
+  margin: 0.5em 0;
+}
+.prose-jarvis pre {
+  background: #0b0e14;
+  border: 1px solid #232a3b;
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+}
+.prose-jarvis code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+}
+.prose-jarvis ul,
+.prose-jarvis ol {
+  padding-left: 1.4em;
+  margin: 0.5em 0;
+}
