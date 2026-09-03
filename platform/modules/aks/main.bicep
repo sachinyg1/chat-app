@@ -4,8 +4,8 @@ param environment string
 @description('Azure region for deployment')
 param location string = resourceGroup().location
 
-@description('VM size for the AKS node pool - keep small/cheap for nonprod')
-param vmSize string = 'Standard_B2s'
+@description('VM size for the AKS node pool')
+param vmSize string = 'Standard_D2s_v7'
 
 @description('Number of nodes in the system pool')
 param nodeCount int = 1
