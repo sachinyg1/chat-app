@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jarvis-ingress
+  namespace: jarvis
+  # If you're on AKS App Routing instead of nginx-ingress, swap
+  # ingressClassName below to "webapprouting.kubernetes.azure.com".
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: <YOUR_FRONTEND_DOMAIN>   # e.g. jarvis.yourdomain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jarvis-frontend
+                port:
+                  number: 3000
+    - host: <YOUR_API_DOMAIN>   # e.g. jarvis-api.yourdomain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: jarvis-backend
+                port:
+                  number: 8000
+  # tls:
+  #   - hosts:
+  #       - <YOUR_FRONTEND_DOMAIN>
+  #       - <YOUR_API_DOMAIN>
+  #     secretName: jarvis-tls   # requires cert-manager

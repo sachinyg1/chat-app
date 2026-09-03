@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jarvis-frontend
+  namespace: jarvis
+  labels:
+    app: jarvis-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jarvis-frontend
+  template:
+    metadata:
+      labels:
+        app: jarvis-frontend
+    spec:
+      imagePullSecrets:
+        - name: acr-creds
+      containers:
+        - name: jarvis-frontend
+          # NEXT_PUBLIC_API_URL is already baked into this image at build
+          # time (see frontend/Dockerfile) -- no env var needed here.
+          image: acr2bkndb2inonprod.azurecr.io/jarvis-frontend:v1
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jarvis-frontend
+  namespace: jarvis
+spec:
+  selector:
+    app: jarvis-frontend
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: LoadBalancer
