@@ -6,7 +6,7 @@ metadata:
   labels:
     app: jarvis-backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: jarvis-backend
@@ -32,11 +32,11 @@ spec:
                 name: jarvis-secrets
           resources:
             requests:
-              cpu: "100m"
-              memory: "256Mi"
+              cpu: "50m"
+              memory: "128Mi"
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "250m"
+              memory: "256Mi"
           readinessProbe:
             httpGet:
               path: /health
